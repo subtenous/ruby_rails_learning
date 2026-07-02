@@ -218,3 +218,167 @@ puts whisper #=> "hello everybody"
 # Debugging
 
 -using pry-byebug for debugging line by line
+
+# Basic Enumerable Methods
+
+## Select
+
+A loop without enumerable methods
+```ruby
+friends = ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+invited_list = []
+
+for friend in friends do
+  if friend != 'Brian'
+  invited_list.push(friend)
+  end
+end
+
+invited_list #=> ["Sharon", "Leo", "Leila", "Arun"]
+```
+- Using the #select enumerable method
+```ruby
+friends = ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+
+friends.select { |friend| friend != 'Brian' }
+ #=> ["Sharon", "Leo", "Leila", "Arun"]
+```
+- Or even better
+```ruby
+friends = ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+
+friends.reject { |friend| friend == 'Brian' }
+ #=> ["Sharon", "Leo", "Leila", "Arun"]
+```
+
+## Each
+
+Using #each 
+
+```ruby
+friends = ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+
+friends.each { |friend| puts "Hello, " + friend }
+```
+
+do...end can be used instead of {...} for logic that requires multiple lines
+
+```ruby
+my_array = [1, 2]
+
+my_array.each do |num|
+  num *= 2
+  puts "The new number is #{num}."
+end
+
+#=> The new number is 2.
+#=> The new number is 4.
+
+#=> [1, 2] 
+```
+
+each also works for hashes, depending on how the block variable is defined each iteration will either yeild both the key and value individually or together (as an array)
+
+```ruby 
+my_hash = { "one" => 1, "two" => 2 }
+
+my_hash.each { |key, value| puts "#{key} is #{value}" }
+
+#=> one is 1
+#=> two is 2
+#=> { "one" => 1, "two" => 2}
+
+my_hash.each { |pair| puts "the pair is #{pair}" }
+
+#=> the pair is ["one", 1]
+#=> the pair is ["two", 2]
+#=> { "one" => 1, "two" => 2}
+```
+
+## Each_with_index
+
+This uses two block variables instead of one as it iterates through. 
+The first variable being the element itself while the second value is the element itself
+This allows some slightly more complex things to be done
+
+```ruby
+fruits = ["apple", "banana", "strawberry", "pineapple"]
+
+fruits.each_with_index { |fruit, index| puts fruit if index.even? }
+
+#=> apple
+#=> strawberry
+#=> ["apple", "banana", "strawberry", "pineapple"]
+
+```
+
+## Map
+
+- Using map over each can make some things a lot more efficient
+
+```ruby
+friends = ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+
+friends.map { |friend| friend.upcase }
+#=> `['SHARON', 'LEO', 'LEILA', 'BRIAN', 'ARUN']`
+```
+
+Trying to do that with each would require more unnecessary code
+
+Another example
+```ruby 
+salaries = [1200, 1500, 1100, 1800]
+
+salaries.map { |salary| salary - 700 }
+#=> [500, 800, 400, 1100]
+```
+
+## Select
+
+```ruby
+responses = { 'Sharon' => 'yes', 'Leo' => 'no', 'Leila' => 'no', 'Arun' => 'yes' }
+responses.select { |person, response| response == 'yes'}
+#=> {"Sharon"=>"yes", "Arun"=>"yes"}
+```
+
+## Reduce
+
+```ruby
+my_numbers = [5, 6, 7, 8]
+
+my_numbers.reduce { |sum, number| sum + number }
+#=> 26
+```
+
+Slightly more complex example of using #reduce
+```ruby
+votes = ["Bob's Dirty Burger Shack", "St. Mark's Bistro", "Bob's Dirty Burger Shack"]
+
+votes.reduce(Hash.new(0)) do |result, vote|
+  result[vote] += 1
+  result
+end
+#=> {"Bob's Dirty Burger Shack"=>2, "St. Mark's Bistro"=>1}
+```
+
+## Bang methods
+
+Methods like map and select can become map! and select! instead of returning a new array they modify the original array.
+
+## Return values of enumerables
+
+Wrapping a enumerable method in a method definition is a good option for returning values of enumerables
+
+```ruby
+friends = ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+
+def invited_friends(friends)
+  friends.select { |friend| friend != 'Brian' }
+end
+
+friends
+#=> ['Sharon', 'Leo', 'Leila', 'Brian', 'Arun']
+
+invited_friends(friends)
+ #=> ["Sharon", "Leo", "Leila", "Arun"]
+```
