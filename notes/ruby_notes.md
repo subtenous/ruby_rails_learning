@@ -382,3 +382,55 @@ friends
 invited_friends(friends)
  #=> ["Sharon", "Leo", "Leila", "Arun"]
 ```
+
+# Predicate Enumerable Methods
+
+## include?
+
+Very simple method which can massively cut down on lines of code
+
+```ruby
+numbers = [5, 6, 7, 8]
+
+numbers.include?(6)
+#=> true
+
+numbers.include?(3)
+#=> false
+```
+
+## any?
+
+returns true if any elements in the array match the condition within the block; otherwise, it will return false
+
+```ruby
+numbers = [21, 42, 303, 499, 550, 811]
+
+numbers.any? { |number| number > 500 }
+#=> true
+
+numbers.any? { |number| number < 20 }
+#=> false
+```
+
+## all?
+
+returns true if all the elements in the array match the condition within the block; otherwise, it will return false
+
+```ruby
+fruits = ["apple", "banana", "strawberry", "pineapple"]
+
+fruits.all? { |fruit| fruit.length > 3 }
+#=> true
+
+fruits.all? { |fruit| fruit.length > 6 }
+#=> false
+```
+
+## none?
+
+returns true if none if the elements in the array match the condition within the block
+
+## one?
+
+returns true if one if the elements in the array match the condition within the block

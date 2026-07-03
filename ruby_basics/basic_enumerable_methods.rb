@@ -18,7 +18,7 @@ display_guess_order(["england", "spain", "portugal", "england", "spain"])
 def find_absolute_values(numbers)
   # use #map to iterate through each item of the numbers (an array)
   # return an array of absolute values of each number
-  numbers.map {|number| puts number.abs}
+  numbers.map {|number| number.abs}
 end
 
 find_absolute_values([1, -2, 3, -7])
@@ -28,6 +28,7 @@ def find_low_inventory(inventory_list)
   # return a hash of items with values less than 4
   inventory_list.select { |key, value| value < 4}
 end
+
 
 def find_word_lengths(word_list)
   # use #reduce to iterate through each item of the word_list (an array)
