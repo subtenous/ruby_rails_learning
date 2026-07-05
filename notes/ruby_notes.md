@@ -526,3 +526,13 @@ end
 #=> false
 
 ```
+
+## Caesar Cipher
+
+I first wrote a basic working version using conditionals and ASCII values with `.ord` and `.chr`.
+
+The first version handled:
+- lowercase letters
+- uppercase letters
+- punctuation/spaces
+- simple wraparound from z to a
