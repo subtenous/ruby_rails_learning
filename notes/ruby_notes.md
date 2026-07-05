@@ -434,3 +434,95 @@ returns true if none if the elements in the array match the condition within the
 ## one?
 
 returns true if one if the elements in the array match the condition within the block
+
+# Nested collections
+
+- Nested arrays are simply just arrays within arrays 
+- Acessing them can be done through indexing, where the first value is the index of the nested element and the second is the index inside of the nested element
+
+- mutable and immutable nested arrays can be created 
+- in the first example changing the value in the first nested array causes the first element to change in all three nested arrays.
+```ruby
+mutable = Array.new(3, Array.new(2))
+#=> [[nil, nil], [nil, nil], [nil, nil]]
+mutable[0][0] = 1000
+#=> 1000
+mutable
+#=> [[1000, nil], [1000, nil], [1000, nil]]
+```
+
+- In this example all three inner arrays are independent objects. When one is modified, the others stay the same.
+
+```ruby
+nested_arrays = Array.new(3) { Array.new(2) }
+#=> [[nil, nil], [nil, nil], [nil, nil]]
+nested_arrays[0][0] = 1000
+#=> 1000
+nested_arrays
+#=> [[1000, nil], [nil, nil], [nil, nil]]
+```
+
+## Adding and removing elements
+
+Push and shovel operator can be used to add, same goes for pop. Use indexing to choose which nested array to push or pop to or from
+
+```ruby
+test_scores << [100, 99, 98, 97]
+#=> [[97, 76, 79, 93], [79, 84, 76, 79], [88, 67, 64, 76], [94, 55, 67, 81], [100, 99, 98, 97]]
+test_scores[0].push(100)
+#=> [97, 76, 79, 93, 100]
+test_scores
+#=> [[97, 76, 79, 93, 100], [79, 84, 76, 79], [88, 67, 64, 76], [94, 55, 67, 81], [100, 99, 98, 97]]
+
+```
+
+## Iterating over a nested array
+
+This iterates each nested array
+```ruby
+teacher_mailboxes.each_with_index do |row, row_index|
+  puts "Row:#{row_index} = #{row}"
+end
+#=> Row:0 = ["Adams", "Baker", "Clark", "Davis"]
+#=> Row:1 = ["Jones", "Lewis", "Lopez", "Moore"]
+#=> Row:2 = ["Perez", "Scott", "Smith", "Young"]
+#=> [["Adams", "Baker", "Clark", "Davis"], ["Jones", "Lewis", "Lopez", "Moore"], ["Perez", "Scott", "Smith", "Young"]]
+
+```
+
+Using nested enumerable methods to loop over elements inside of each nested array
+```ruby
+teacher_mailboxes.each_with_index do |row, row_index|
+  row.each_with_index do |teacher, column_index|
+    puts "Row:#{row_index} Column:#{column_index} = #{teacher}"
+  end
+end
+#=> Row:0 Column:0 = Adams
+#=> Row:0 Column:1 = Baker
+#=> Row:0 Column:2 = Clark
+#=> Row:0 Column:3 = Davis
+#=> Row:1 Column:0 = Jones
+#=> Row:1 Column:1 = Lewis
+#=> Row:1 Column:2 = Lopez
+#=> Row:1 Column:3 = Moore
+#=> Row:2 Column:0 = Perez
+#=> Row:2 Column:1 = Scott
+#=> Row:2 Column:2 = Smith
+#=> Row:2 Column:3 = Young
+#=> [["Adams", "Baker", "Clark", "Davis"], ["Jones", "Lewis", "Lopez", "Moore"], ["Perez", "Scott", "Smith", "Young"]]
+
+```
+
+.flatten can be used to flatten a nested array into a single array for more simple looping
+
+Example of nesting two predicate enumerables together. This code determines if any students score higher than 80 on everything
+```ruby
+test_scores = [[97, 76, 79, 93], [79, 84, 76, 79], [88, 67, 64, 76], [94, 55, 67, 81]]
+#=> [[97, 76, 79, 93], [79, 84, 76, 79], [88, 67, 64, 76], [94, 55, 67, 81]]
+
+test_scores.any? do |scores|
+  scores.all? { |score| score > 80 }
+end
+#=> false
+
+```
