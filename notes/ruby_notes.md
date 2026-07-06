@@ -536,3 +536,12 @@ The first version handled:
 - uppercase letters
 - punctuation/spaces
 - simple wraparound from z to a
+
+## Caesar Cipher Refactor
+
+I then refactored it using modulo `% 26`, `map`, and `join`.
+
+The refactored version uses a base ASCII value:
+
+```ruby
+base = "a".ord
