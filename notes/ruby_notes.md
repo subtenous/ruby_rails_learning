@@ -545,3 +545,200 @@ The refactored version uses a base ASCII value:
 
 ```ruby
 base = "a".ord
+```
+# Object Oriented Programming in Ruby
+
+### Encapsulation
+Encapsulation is one of the fundamental conceps of OOP. It describes teh idea of bundling or combining the data and the operations that work on that data into single entity, e.g., an object.
+
+### Polymorphism
+Polymorphism is the ability for different types of data to respond to a common interface. Simply put different classes could share behaviours like move, a class could be anything from a person to a car that can move.
+
+### Inheritance
+All quite familiar but inheritance inherits from another class. For example plant could be a superclass where different types of plants are sub classes that inherit methods from the superclass.
+
+### Objects
+Objects are instances of a class that contain different information from each other.
+
+```ruby
+class GoodDog
+end
+
+sparky = GoodDog.new
+```
+
+### Modules
+```ruby
+module Speak
+  def speak(sound)
+    puts sound
+  end
+end
+
+class GoodDog
+  include Speak
+end
+
+class HumanBeing
+  include Speak
+end
+
+sparky = GoodDog.new
+sparky.speak("Arf!")        # => Arf!
+bob = HumanBeing.new
+bob.speak("Hello!")         # => Hello!
+```
+
+### States and Behaviours
+- State referes to the data associated to an individual object, instance variables
+- Behaviours are what objects are capable of doing (methods)
+- Objects may contain different info such as name, weight and height whihc are tracked with instance variables.
+- The bahviours are things like bark, run, fetch. 
+
+### Initialising and new object
+
+Constructor method
+
+```ruby
+class GoodDog
+  def initialize
+    puts "This object was initialized!"
+  end
+end
+
+sparky = GoodDog.new        # => "This object was initialized!"
+```
+### Instance Variables
+
+@name is the instance variable
+
+```ruby
+class GoodDog
+  def initialize(name)
+    @name = name
+  end
+end
+
+sparky = GoodDog.new("Sparky")
+```
+### Compostition
+
+The lifetimes of the container and composed objects are dependent on each other. Car has an engine, and car instances contain an engine object. When the car is instantiated the engine is also instantiated. Likewise. when the car object is destroyed, the composed engine object is also destroyed.
+
+```ruby
+class Engine
+  def start
+    puts "Engine starting..."
+  end
+end
+
+class Car
+  def initialize
+    @engine = Engine.new  # Engine instance is created when Car is created
+  end
+
+  def start
+    @engine.start
+  end
+end
+
+my_car = Car.new
+my_car.start  # Engine is an integral part of Car
+```
+
+### Aggregation
+
+Unlike composition, the lifetime of the contained objects does not depend on the lifetime of the container. In this case, Car instances have a list of Passenger objects, but these Passenger objects can exist independently of the Car instance. They can be passed to the Car object when it's instantiated or any time before the Car instance is destroyed. However, the Passenger objects will continue to live on after the Car object is destroyed
+
+```ruby
+class Passenger
+end
+
+class Car
+  def initialize(passengers)
+    @passengers = passengers  # Passengers are given to the Car at creation
+  end
+end
+
+# Passengers can exist without Car
+passengers = [Passenger.new, Passenger.new]
+my_car = Car.new(passengers)
+```
+
+### Instance Methods
+Currently the GoodDog cant do anything, here is a behaviour
+```ruby
+class GoodDog
+  def initialize(name)
+    @name = name
+  end
+
+  def speak
+    "Arf!"
+  end
+end
+
+sparky = GoodDog.new("Sparky")
+sparky.speak
+
+puts sparky.speak
+
+fido = GoodDog.new("Fido")
+puts fido.speak 
+
+# can also change speak to have the name included
+
+def speak
+  "#{@name} says arf!"
+end
+```
+
+### Accessor methods
+
+```ruby
+class GoodDog
+  def initialize(name)
+    @name = name
+  end
+
+  def get_name
+    @name
+  end
+
+  def speak
+    "#{@name} says arf!"
+  end
+end
+
+sparky = GoodDog.new("Sparky")
+puts sparky.speak
+puts sparky.get_name
+```
+
+this can be done more efficiently with attr_reader
+
+```ruby
+class GoodDog
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+  end
+end
+
+sparky = GoodDog.new("Sparky")
+puts sparky.name
+```
+attr_writer allows for changing/writing an instance variable
+attr_accessor allows both read and write:
+
+### self
+
+`self` refers to the current object or context.
+
+Inside an instance method, `self` is the current object.
+
+```ruby
+def introduce
+  "Hi, I am #{self.name}"
+end
