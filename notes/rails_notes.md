@@ -343,3 +343,122 @@ In the Rails console, I can view the saved cars with:
 ```ruby
 Car.all
 ```
+
+# Controllers 
+
+Controllers handle requests after the router has matched a route.
+
+A controller action is a method inside a controller.
+
+Example:
+
+```ruby
+def index
+  @cars = Car.all
+end
+```
+
+This action asks the Car model for all cars and stores them in @cars.
+
+Instance variables created in a controller action are available in the matching view.
+
+Example flow:
+
+GET /cars
+→ CarsController#index
+→ @cars = Car.all
+→ app/views/cars/index.html.erb
+
+## Naming Convention
+
+Rails relies heavily on naming conventions.
+
+For example:
+
+`CarsController#index`
+
+will automatically render:
+
+`app/views/cars/index.html.erb`
+
+unless told otherwise.
+
+This works because the controller is called CarsController, the action is called index, and the view file is in the matching cars folder.
+
+## Params
+
+params contains data sent with the request
+
+for a route like:
+
+`/cars/3`
+
+Rails stores the ID in:
+
+```ruby
+params[:id]
+```
+
+A controller can then find the correct car:
+
+```ruby
+@car = Car.find(params.expect(:id))
+```
+
+Form data is also send through params
+
+## Strong Parameters
+
+Strong parameters protect the app by only allowing specific form fields
+
+Example:
+
+```ruby
+def car_params
+    params.expect(car: [ :make, :model, :year ])
+end
+```
+
+## Render vs Redirect
+
+redirect_to sends the browser to a new route. This creates a new HTTP request.
+
+Example: 
+
+```ruby
+redirect_to @car, notice: "Car was successfully created."
+```
+
+This usually happens after successfully creating, updating, or deleting something.
+
+render displays a view without starting new request.
+
+Example:
+
+```ruby
+render :new, status: : unprocessable_entity
+```
+
+This is often used when saving fails, so the user can see the form again wth errors.
+
+Simple rule:
+
+- Save worked → redirect_to
+- Save failed → render the form again
+
+## Flash messages
+
+Flash messages are one-time messages shown to the user.
+
+Example:
+
+```ruby
+redirect_to @car, notice: "Car was successfully created."
+```
+
+The `notice` is a flash message.
+
+Flash messages are useful after redirects because they survive the new request.
+
+For rendering without redirecting, Rails can use `flash.now`
+

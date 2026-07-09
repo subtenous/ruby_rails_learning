@@ -2,6 +2,7 @@ class CarsController < ApplicationController
   before_action :set_car, only: %i[ show edit update destroy ]
 
   # GET /cars or /cars.json
+  # gets all cars from the database and makes them available to index.html.erb
   def index
     @cars = Car.all
   end
@@ -20,6 +21,9 @@ class CarsController < ApplicationController
   end
 
   # POST /cars or /cars.json
+  # Builds a new car from form params.
+  # If saving works, redirect to the car's show page.
+  # If saving fails, render the new form again.
   def create
     @car = Car.new(car_params)
 
@@ -59,6 +63,8 @@ class CarsController < ApplicationController
 
   private
     # Use callbacks to share common setup or constraints between actions.
+    # Finds the car using the ID from the URL.
+    # Example: /cars/3 gives params[:id] as "3"
     def set_car
       @car = Car.find(params.expect(:id))
     end
