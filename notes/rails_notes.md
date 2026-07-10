@@ -462,3 +462,274 @@ Flash messages are useful after redirects because they survive the new request.
 
 For rendering without redirecting, Rails can use `flash.now`
 
+# Views
+
+Views are the user-facing part of a Rails app.
+
+A view is a HTML template with embedded Ruby. Rails uses the view to generate the HTML response that is sent back to the browser.
+
+Views are stored using this pattern:
+
+```text
+app/views/controller_name/action_name.html.erb
+```
+
+For example:
+
+```text
+CarsController#index
+```
+
+will automatically render:
+
+`app/views/cars/index.html.erb`
+
+unless the controller is told to render something else.
+
+Instance variable created in a cointroller action are available in the matching view.
+
+Example controller:
+
+```ruby
+def index
+  @cars = Car.all
+end
+```
+
+example view:
+
+```text
+<% @cars.each do |car| %>
+  <p><%= car.make %></p>
+<% end %>
+```
+
+This works because @cars was created in the controller and passed to the view
+
+##Layouts
+
+A layout is the outer shell of the webpage.
+
+Layouts live in:
+
+`app/views/layouts`
+
+The main Rails layout is usually:
+
+`app/views/layouts/application.html.erb`
+
+The layout contains shared HTML structure such as:
+
+- DOCTYPE
+- <html>
+- <head>
+- CSS and JavaScript tags
+- navbar
+- footer
+- flash messages
+
+The individual view gets inserted into the layout where Rails sees:
+
+`<%= yield %>`
+
+So the layout wraps around the current page.
+
+Simple flow:
+
+layout starts
+→ <%= yield %> inserts current view
+→ layout finishes
+
+## ERB
+
+ERB stands for Embedded Ruby.
+
+It allows Ruby code to run inside HTML.
+
+`<% %>` runs Ruby code but does not output anything.
+
+Example:
+
+`<% @cars.each do |car| %>`
+
+`<%= %>` runs Ruby code and outputs the result into the HTML.
+
+Example:
+
+`<%= car.make %>`
+
+`<%# %>` is an ERB comment.
+
+Example:
+
+`<%# This comment will not appear in the HTML %>`
+
+Use `<% %>` for Ruby logic such as loops and if statements.
+
+Use `<%= %>` when something should be displayed on the page.
+
+Example:
+
+```text
+<% if @cars.any? %>
+  <p>There are <%= @cars.count %> cars saved.</p>
+<% else %>
+  <p>No cars have been added yet.</p>
+<% end %>
+```
+
+Important: Ruby blocks and conditionals in ERB still need end.
+
+## Partials
+
+Partials are reusable view files.
+
+They help avoid repeating the same HTML/ERB in multiple places.
+
+Partial files start with an underscore.
+
+Example:
+
+`app/views/cars/_form.html.erb`
+
+The partial is rendered without the underscore:
+
+`<%= render "form" %>`
+
+A common example is a form partial.
+
+The same `_form.html.erb` partial can be reused by both:
+
+`app/views/cars/new.html.erb`
+`app/views/cars/edit.html.erb`
+
+This avoids duplicating the form code.
+
+## Passing Local Variables to Partials
+
+Partials can receive local variables.
+
+Example:
+
+`<%= render "car", car: car %>`
+
+Inside the partial, the variable is used without @:
+
+`<%= car.make %>`
+
+This is better than relying on instance variables inside partials because it makes the partial easier to reuse.
+
+## Rendering Collections
+
+Rails can render a collection using partials.
+
+Instead of manually writing:
+
+```text
+<% @cars.each do |car| %>
+  <%= render "car", car: car %>
+<% end %>
+```
+
+Rails can often use the shortcut:
+
+`<%= render @cars %>`
+
+Rails will look for a partial named:
+
+`app/views/cars/_car.html.erb`
+
+and render it once for each car.
+
+## Link Helpers
+
+Rails views use helper methods to generate HTML.
+
+`link_to` creates an anchor tag.
+
+Instead of hardcoding:
+
+`<a href="/cars">Back to cars</a>`
+
+Rails prefers:
+
+`<%= link_to "Back to cars", cars_path %>`
+
+cars_path generates a relative path like:
+
+`/cars`
+
+cars_url generates a full URL like:
+
+`http://localhost:3000/cars`
+
+Most of the time, `_path` is enough inside the app.
+
+## Asset Tags
+
+Rails has helpers for linking assets such as CSS, JavaScript, and images.
+
+Examples:
+
+```text
+<%= stylesheet_link_tag "application" %>
+<%= javascript_include_tag "application" %>
+<%= image_tag "example.jpg" %>
+```
+
+These helpers generate the correct HTML tags for loading assets.
+
+## Practical Views Task
+
+In my cars scaffold app, I edited the views to understand how Rails displays data from the controller.
+
+The index action in CarsController sets:
+
+```ruby
+@cars = Car.all
+```
+
+The `index.html.erb` view can then use `@cars`.
+
+Example:
+
+```text
+<% if @cars.any? %>
+  <p>There are <%= @cars.count %> cars saved.</p>
+<% else %>
+  <p>No cars have been added yet.</p>
+<% end %>
+```
+
+This showed me that views can use Ruby logic to decide what HTML to display.
+
+I also looked at the scaffold partials:
+```text
+app/views/cars/_car.html.erb
+app/views/cars/_form.html.erb
+```
+
+`_car.html.erb` is used to display a car.
+
+`_form.html.erb` is reused by both the new and edit pages.
+
+I also used route helpers in views.
+
+Example:
+
+`<%= link_to "Back to cars", cars_path %>`
+
+This creates a link to the cars index page without hardcoding `/cars`.
+
+## Main Thing to Remember
+
+Views display the data prepared by controllers.
+
+Example flow:
+
+GET /cars
+→ route sends request to CarsController#index
+→ controller sets @cars = Car.all
+→ Rails renders app/views/cars/index.html.erb
+→ view uses @cars to generate HTML
+→ browser receives the final HTML page

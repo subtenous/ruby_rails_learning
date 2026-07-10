@@ -4,7 +4,10 @@
 
 <h1>Cars</h1>
 
+<p>This page displays all cars saved in the database.</p>
+
 <div id="cars">
+  <!-- @cars comes from CarsController#index -->
   <% @cars.each do |car| %>
     <%= render car %>
     <p>
@@ -12,5 +15,11 @@
     </p>
   <% end %>
 </div>
+
+<% if @cars.any? %>
+  <p>There are <%= @cars.count %> cars saved.</p>
+<% else %>
+  <p>No cars have been added yet.</p>
+<% end %>
 
 <%= link_to "New car", new_car_path %>
