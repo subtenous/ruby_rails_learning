@@ -733,3 +733,82 @@ GET /cars
 → Rails renders app/views/cars/index.html.erb
 → view uses @cars to generate HTML
 → browser receives the final HTML page
+
+## Store App Summary
+
+The Store App project gave me practice building a basic CRUD resource in Rails.
+
+The main resource was `Product`.
+
+The app included:
+
+- `index` to show all products
+- `show` to show one product
+- `new` to display the new product form
+- `create` to save a new product
+- `edit` to display the edit form
+- `update` to save changes to an existing product
+- `destroy` to delete a product
+
+The main Rails flow was:
+
+```text
+route → controller action → model/database → view or redirect
+```
+
+The model was created with:
+
+```bash
+bin/rails generate model Product name:string
+```
+
+The database table was created by running: 
+
+```bash
+bin/rails db:migrate
+```
+
+The route shortcut:
+
+```ruby
+resources :products
+```
+
+created the standard RESTful routes for products.
+
+The controller used `before_action` to avoid repeating:
+
+```ruby
+@product = Product.find(params.expect(:id))
+```
+
+for `show`, `edit`, `update`, and `destroy`.
+
+The form used:
+
+```text
+<%= form_with model: product do |form| %>
+```
+
+This lets Rails build the correct form for either creating a new products or editing an existing product.
+
+The app used strong parameters:
+
+```ruby
+def product_params
+  params.expect(product: [ :name ])
+end
+```
+
+This only allows the `name` field from the submitted form data.
+
+The form was extracted into a partial:
+
+`app/view/products/_form.html.erb`
+
+This allowed both `new.html.erb` and `edit.html.erb` to reuse the same form code.
+
+Main thing learned:
+
+Rails CRUD apps follow a repeated pattern. Once I understand one resource like Product, I can apply the same structure to other resources.
+
