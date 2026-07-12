@@ -812,3 +812,352 @@ Main thing learned:
 
 Rails CRUD apps follow a repeated pattern. Once I understand one resource like Product, I can apply the same structure to other resources.
 
+# Active Record Basics
+
+Active Record is the model layer in Rails.
+
+It lets Ruby objects represent record in a database table. 
+
+Example:
+
+```ruby
+class Product < ApplicationRecord
+end
+```
+
+Even though this class looks empty, Rails uses Active Record to connect it to the products table.
+
+A Product object represents one row in the products table.
+
+## ORM
+
+ORM stands for Object Relational Mapping.
+
+It connects Ruby objects to database tables.
+
+Instead of writing SQL manually, Rails lets me write Ruby methods.
+
+Example SQL:
+
+```sql
+SELECT * FROM products;
+```
+
+Active Record:
+
+```ruby
+Product.all
+```
+Example SQL:
+
+```sql
+SELECT * FROM products WHERE id = 1;
+```
+
+Active Record:
+
+```ruby
+Product.find(1)
+```
+
+Active Record still generates SQL behind the scenes, but I usually interact with it using Ruby.
+
+## Naming Conventions
+
+Rails uses convention over configuration.
+
+Model names are singular and use CamelCase:
+
+```ruby
+Product
+LineItem
+BookClub
+```
+
+Database table names are plural and use snake_case:
+```text
+products
+line_items
+book_clubs
+```
+
+Examples:
+
+```text
+Product → products
+Book → books
+LineItem → line_items
+Person → people
+```
+
+Rails uses these naming conventions automatically.
+
+## Schema Conventions
+
+Rails database tables normally have an `id` primary key automatically.
+
+Example:
+
+```text
+id
+name
+created_at
+updated_at
+```
+
+`id` uniquely identifies each record.
+
+`created_at` is automatically set when the record is created.
+
+`updated_at` is automatically updated when the record changes.
+
+Foreign keys usually follow this pattern:
+
+`singular_model_name_id`
+
+Examples:
+
+```text
+product_id
+booking_id
+flight_id
+airport_id
+```
+
+This will matter for associations in Flight Booker.
+
+## Creating Models and Migrations
+
+A model and migration can be generated with:
+
+```bash
+bin/rails generate model Product name:string
+```
+
+This creates:
+
+```text
+app/models/product.rb
+db/migrate/...create_products.rb
+```
+
+The model represents the Ruby class.
+
+The migration describes the database table change.
+
+Example migration:
+
+```ruby
+create_table :products do |t|
+  t.string :name
+
+  t.timestamps
+end
+```
+
+This creates a `products` table with:
+
+```text
+id
+name
+created_at
+updated_at
+```
+
+Run migrations with:
+
+```bash
+bin/rails db:migrate
+```
+
+Undo the last migration with:
+
+```bash
+bin/rails db:rollback
+```
+
+## CRUD with Active Record
+
+CRUD means:
+
+```text
+Create
+Read
+Update
+Delete
+```
+
+## Create
+
+`new` creates an object in memory but does not save it yet:
+
+```ruby
+product = Product.new(name: "T-Shirt")
+product.save
+```
+
+`create` creates and saves in one step:
+
+```ruby
+Product.create(name: "T-Shirt")
+```
+
+The hash:
+
+```ruby
+{ name: "T-Shirt" }
+```
+
+sets the model attributes.
+
+## Read
+
+Get all records:
+
+```ruby
+Product.all
+```
+
+Find one record by ID:
+
+```ruby
+Product.find(1)
+```
+
+Find the first matching record:
+
+```ruby
+Product.find_by(name: "T-Shirt")
+```
+
+Filter records:
+
+```ruby
+Product.where(name: "T-Shirt")
+```
+
+Order records:
+
+```ruby
+Product.order(name: :asc)
+```
+
+`find` returns one object.
+
+`where` returns a collection-like ActiveRecord relation, because multiple records could match.
+
+## Update
+
+Find a record, change an attribute, then save:
+
+```ruby
+product = Product.find(1)
+product.name = "Shoes"
+product.save
+```
+
+Or update in one step:
+
+```ruby
+product.update(name: "Shoes")
+```
+
+## Delete
+
+Delete a record:
+
+```ruby
+product = Product.find(1)
+product.destroy
+```
+
+## Validations
+
+Validations check that data is valid before it is saved to the database.
+
+Example:
+
+```ruby
+class Product < ApplicationRecord
+  validates :name, presence: true
+end
+```
+
+This means a product must have a name.
+
+If the product is invalid:
+
+```ruby
+product.save
+```
+
+returns:
+
+```ruby
+false
+```
+
+Errors can be checked with:
+
+```ruby
+product.errors.full_messages
+```
+
+Example:
+
+`["Name can't be blank"]`
+
+## Callbacks
+
+Callbacks run code at certain points in a model’s lifecycle.
+
+Example:
+
+```ruby
+after_create :log_new_user
+```
+
+This would run after a record is created.
+
+Callbacks are useful, but I do not need to focus on them deeply yet.
+
+## Associations
+
+Associations define relationships between models.
+
+Example:
+
+```ruby
+class Author < ApplicationRecord
+  has_many :books
+end
+```
+This means one author can have many books.
+
+Associations will be important for Flight Booker.
+
+Example Flight Booker relationships:
+
+```text
+Flight has many bookings
+Booking belongs to flight
+Booking has many passengers
+Passenger belongs to booking
+```
+
+## Main Thing to Remember
+
+Active Record lets Rails models talk to database tables.
+
+A model object represents a row in a table.
+
+Example:
+
+```ruby
+product = Product.find(1)
+product.name
+```
+
+This finds one row from the `products` table and reads its `name` column.
+
+Active Record lets me use Ruby methods instead of writing SQL manually.
