@@ -1357,3 +1357,140 @@ Models can be connected:
 - Booking belongs to Flight
 - Passenger belongs to Booking
 - Flight has many Bookings
+
+## Basic Validations
+
+Validations are rules in a model that check whether data is valid before it is saved to the database.
+
+Example:
+
+```ruby
+class Product < ApplicationRecord
+  validates :name, presence: true
+end
+```
+
+This means a product cannot be saved without a name.
+
+Validations usually run before:
+
+```ruby
+save
+create
+update
+```
+
+If the object is invalid, Rails will not save it to the database.
+
+## Checking Validity
+
+```ruby
+product = Product.new
+product.valid?
+```
+
+`valid?` runs the validations and returns `true` or `false`.
+
+```ruby
+product.errors.full_messages
+```
+
+shows the validation error messages.
+
+Example:
+```ruby
+product = Product.new
+product.valid?
+product.errors.full_messages
+```
+Result:
+
+`["Name can't be blank"]`
+
+## Common Validations
+
+Presence:
+
+```ruby
+validates :name, presence: true
+```
+Length:
+
+```ruby
+validates :name, length: { minimum: 2 }
+```
+
+Numericality:
+
+```ruby
+validates :duration, numericality: { only_integer: true }
+```
+Uniqueness:
+
+```ruby
+validates :code, uniqueness: true
+```
+
+Format:
+
+```ruby
+validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }
+```
+
+Inclusion:
+```ruby
+validates :status, inclusion: { in: ["pending", "confirmed", "cancelled"] }
+```
+
+There are many more but some are less common than others.
+
+## save vs save!
+
+Non-bang methods return false if validation fails:
+
+```ruby
+product.save
+```
+Bang methods raise an error if validation fails:
+
+```ruby
+product.save!
+```
+
+In controllers, normal `save` is usually useful because the failure can be handled:
+
+```ruby
+if @product.save
+  redirect_to @product
+else
+  render :new, status: :unprocessable_entity
+end
+```
+
+## Validation Errors in Forms
+
+If a form submission fails validation, the controller usually renders the form again:
+
+```ruby
+render :new, status: :unprocessable_entity
+```
+
+The same invalid object is used, so the view can show its errors.
+
+Example:
+
+<% if @product.errors.any? %>
+  <ul>
+    <% @product.errors.full_messages.each do |message| %>
+      <li><%= message %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+## Main Thing to Remember
+
+Validations belong in the model.
+
+They protect the database from invalid data and keep the controller simpler.
+
+For Flight Booker, validations will be used to make sure important fields exist, such as flight times, airport codes, passenger names, and passenger emails.
