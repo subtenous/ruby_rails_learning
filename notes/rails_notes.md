@@ -1161,3 +1161,199 @@ product.name
 This finds one row from the `products` table and reads its `name` column.
 
 Active Record lets me use Ruby methods instead of writing SQL manually.
+
+# Migrations
+
+A migration is a Ruby file that changes the database schema.
+
+The schema is the structure of the database, such as:
+
+- tables
+- columns
+- indexes
+- foreign keys
+
+A migration does not usually create or move data. It changes the structure of the database.
+
+Migration files live in:
+
+```text
+db/migrate
+```
+
+A migration is like a version of the database. Rails uses the timestamp in the migration filename to know which migrations have already been run and what order to run them in.
+
+## Model vs Migration
+
+A model is a Ruby class used by Rails to talk to a database table.
+
+Example:
+
+`app/models/product.rb`
+
+A migration is a script that creates or changes the database table.
+
+Example:
+
+`db/migrate/...create_products.rb`
+
+Simple rule:
+
+```text
+Model = Ruby object/table interface
+Migration = database structure change
+```
+
+For example:
+
+```ruby
+class Product < ApplicationRecord
+end
+```
+
+is the model.
+
+```ruby
+create_table :products do |t|
+  t.string :name
+  t.timestamps
+end
+```
+
+is the migration that creates the table.
+
+## Model Generator
+
+Use the model generator when creating a new model and table.
+
+Example:
+
+```bash
+bin/rails generate model Product name:string
+```
+
+This creates:
+
+```text
+app/models/product.rb
+db/migrate/...create_products.rb
+```
+The model represents individual products in Ruby.
+
+The migration creates the `products` table in the database.
+
+## Migration Generator
+
+Use the migration generator when changing an existing table.
+
+Example:
+
+`bin/rails generate migration AddPriceToProducts price:decimal`
+
+This creates a migration only.
+
+It does not create a new model.
+
+This is useful when the model/table already exists and I just need to change the database structure.
+
+## Running Migrations
+
+Generating a migration only creates the migration file.
+
+To apply the migration to the database, run:
+
+```bash
+bin/rails db:migrate
+```
+
+This runs any migrations that have not been run yet.
+
+To undo the most recent migration:
+
+```bash
+bin/rails db:rollback
+```
+
+## Typical Blank Rails App Database Flow
+
+For a new Rails app:
+
+```bash
+rails new app_name
+cd app_name
+bin/rails db:create
+bin/rails generate model Product name:string
+bin/rails db:migrate
+```
+
+`db:create` creates the database.
+
+`generate model` creates the model and migration file.
+
+`db:migrate` applies the migration and creates/changes tables.
+
+With SQLite, `db:create` may feel less obvious because the database is just a local file.
+
+With PostgreSQL, `db:create` is more important because Rails needs to create the development and test databases.
+
+## schema.rb
+
+After migrations run, Rails updates:
+
+`db/schema.rb`
+
+`schema.rb` is a snapshot of the current database structure.
+
+It is useful for quickly seeing what tables and columns exist.
+
+The migration history shows how the database changed over time.
+
+The schema file shows what the database looks like now.
+
+## References and Foreign Keys
+
+Migrations can also create reference columns that connect tables together.
+
+Example:
+
+```bash
+bin/rails generate model Passenger booking:references name:string email:string
+```
+
+This creates a `passengers` table with a `booking_id` column.
+
+The `booking_id` column is used to connect each passenger to a booking.
+
+Example:
+
+`passengers.booking_id → bookings.id`
+
+In Rails, this usually matches an association:
+
+```ruby
+class Passenger < ApplicationRecord
+  belongs_to :booking
+end
+
+class Booking < ApplicationRecord
+  has_many :passengers
+end
+```
+
+A reference column is usually named using this pattern:
+
+`model_name_id`
+
+Examples:
+
+```text
+booking_id
+flight_id
+airport_id
+```
+
+Models can be connected:
+
+- Booking belongs to Flight
+- Passenger belongs to Booking
+- Flight has many Bookings
