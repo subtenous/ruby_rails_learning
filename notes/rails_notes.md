@@ -1494,3 +1494,80 @@ Validations belong in the model.
 They protect the database from invalid data and keep the controller simpler.
 
 For Flight Booker, validations will be used to make sure important fields exist, such as flight times, airport codes, passenger names, and passenger emails.
+
+## Basic Associations
+
+Associations define relationships between models.
+
+Example:
+
+```ruby
+class Author < ApplicationRecord
+  has_many :books
+end
+
+class Book < ApplicationRecord
+  belongs_to :author
+end
+```
+
+This means:
+```text
+One author can have many books.
+Each book belongs to one author.
+```
+
+The database connection is made using a foreign key:
+
+`books.author_id → authors.id`
+
+The model with `belongs_to` usually has the foreign key.
+
+Example migration:
+
+```ruby
+create_table :books do |t|
+  t.string :title
+  t.references :author, null: false, foreign_key: true
+
+  t.timestamps
+end
+```
+Rails then gives useful methods:
+
+```ruby
+author.books
+book.author
+author.books.create(title: "The Hobbit")
+```
+`author.books.create(...)` creates a book and automatically sets the `author_id`.
+
+Main rule:
+
+belongs_to side has the foreign key.
+has_many side owns the collection.
+
+Flight Booker examples:
+
+```ruby
+class Flight < ApplicationRecord
+  has_many :bookings
+end
+
+class Booking < ApplicationRecord
+  belongs_to :flight
+  has_many :passengers
+end
+
+class Passenger < ApplicationRecord
+  belongs_to :booking
+end
+```
+This means:
+
+```text 
+A flight has many bookings.
+A booking belongs to one flight.
+A booking has many passengers.
+A passenger belongs to one booking.
+```
