@@ -1571,3 +1571,83 @@ A booking belongs to one flight.
 A booking has many passengers.
 A passenger belongs to one booking.
 ```
+
+## Micro-Reddit
+
+Micro-Reddit was a console-only Rails project focused on models, validations and associations.
+
+### Models
+
+```ruby
+class User < ApplicationRecord
+  has_many :posts
+  has_many :comments
+end
+
+class Post < ApplicationRecord
+  belongs_to :user
+  has_many :comments
+end
+
+class Comment < ApplicationRecord
+  belongs_to :user
+  belongs_to :post
+end
+```
+### Database relationships
+```text
+posts.user_id → users.id
+
+comments.user_id → users.id
+comments.post_id → posts.id
+```
+
+The model on the `belongs_to` side contains the foreign key.
+
+### Association methods
+
+Rails creates useful methods from associations:
+
+```ruby
+user.posts
+post.user
+
+user.comments
+post.comments
+
+comment.user
+comment.post
+```
+
+A collection association such as:
+
+```ruby
+user.comments
+```
+
+can return multiple records.
+
+To retrieve one record:
+
+```ruby
+user.comments.first#
+```
+
+### Creating through an association
+
+```ruby
+post = user.posts.create(
+  title: "First post",
+  body: "Post content"
+)
+```
+
+Rails automatically sets `post.user_id`.
+
+```ruby
+comment = user.comments.create(
+  body: "A comment",
+  post: post
+)
+```
+Rails automatically sets `comment.user_id`, while `post: post` sets `comment.post_id`.
