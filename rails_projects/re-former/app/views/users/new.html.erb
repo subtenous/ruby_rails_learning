@@ -1,4 +1,4 @@
-<form accept-charset="UTF-8" method="post" action="/users">
+<!-- <form accept-charset="UTF-8" method="post" action="/users">
 
     <label for="username">Username</label>
     <input type="text" id="username" name="user[username]">
@@ -10,4 +10,24 @@
     <input type="password" id="password" name="user[password]">
 
     <input type="submit" value="Create User">
-</form>
+</form> -->
+
+<%= form_with model: @user do |form| %>
+    <div>
+        <%= form.label :username, "Username"%>
+        <%= form.text_field :username %>
+    </div>
+
+    <div>
+        <%= form.label :email, "Email" %>
+        <%= form.email_field :email,  placeholder: "example@example.com" %>
+    </div>
+
+    <div>
+        <%= form.label :password, "Choose a password" %>
+        <%= form.password_field :password %>
+    </div>
+
+    <%= form.submit "Create User" %>
+<% end %>
+
