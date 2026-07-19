@@ -1651,3 +1651,66 @@ comment = user.comments.create(
 )
 ```
 Rails automatically sets `comment.user_id`, while `post: post` sets `comment.post_id`.
+
+# Active Record Queries
+
+## Return types
+
+```ruby
+User.find(1)        # Returns a User object
+User.find_by(...)   # Returns one User or nil
+User.where(...)     # Returns an ActiveRecord::Relation
+```
+
+`where` returns a Relation so queries can be chained
+
+## Common query methods
+
+```ruby
+where
+find
+find_by
+order
+limit
+count
+exists?
+pluck
+joins
+includes
+```
+
+## Chaining
+
+```ruby
+User.where(active: true).order(created_at: :desc).limit(5)
+```
+Relations are lazily evaluated until needed.
+
+## N+1 queries
+
+Bad:
+
+```ruby
+User.all.each do |user|
+  puts user.posts.count
+end
+```
+
+Better:
+
+```ruby
+User.includes(:posts).each do |user|
+  puts user.posts.count
+end
+```
+
+`includes` loads associated records in advance.
+
+##Things to remember
+
+- `find` → by ID
+- `find_by` → first matching record
+- `where` → relation (chainable)
+- `joins` → query across tables
+- `pluck` → return column values only
+- `exists?` → true/false
