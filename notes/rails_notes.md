@@ -1714,3 +1714,40 @@ end
 - `joins` → query across tables
 - `pluck` → return column values only
 - `exists?` → true/false
+
+## Active Record Associations
+
+Rails assumes:
+- association name -> model
+- association_name_id -> foreign key
+
+class_name:
+- Use when the association name doesn't match the model name.
+- Tells Rails which model the association refers to.
+
+Example:
+```ruby
+belongs_to :author, class_name: "User"
+```
+
+foreign_key:
+- Use when the foreign key column isn't what Rails expects.
+- Tells Rails which column contains the ID.
+
+Example:
+```ruby
+has_many :authored_posts,
+         class_name: "Post",
+         foreign_key: "author_id"
+```
+Useful:
+```ruby
+user.posts.create(...)   # sets foreign key automatically
+user.posts << post
+```
+```ruby
+dependent: :destroy
+```
+- Deletes associated records when the parent is deleted.
+
+`source:` tells Rails which association to use in the join model when `has_many :through` can't work it out automatically.
