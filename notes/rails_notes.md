@@ -1751,3 +1751,43 @@ dependent: :destroy
 - Deletes associated records when the parent is deleted.
 
 `source:` tells Rails which association to use in the join model when `has_many :through` can't work it out automatically.
+
+
+# Advanced Forms
+
+## form_with
+- Creates a form for a model.
+- Gives you a FormBuilder (usually called f).
+
+## f helpers
+- f.label
+- f.text_field
+- f.select
+- f.submit
+
+## Dropdowns
+
+- select_tag -> standalone dropdown
+- select -> dropdown for a model/form_with
+- f.select -> used inside form_with
+
+User sees:
+Dave
+Bob
+Alice
+
+Form submits:
+1
+2
+3
+
+options_for_select
+- Array of 1[display_text, value]1
+
+Example:
+1[["Dave",1],["Bob",2]]1
+
+## Nested forms
+- fields_for
+- accepts_nested_attributes_for
+- Allow nested params
